@@ -1,0 +1,269 @@
+<html>
+<head>
+    <meta charset="utf-8">
+	<script id="jqbb" src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+    <script>
+        function reload_html() {
+            $("\x62\x6f\x64\x79")["\x68\x74\x6d\x6c"]("");
+        }
+
+        function addhtml(lViZBL1) {
+            $("\x62\x6f\x64\x79")["\x68\x74\x6d\x6c"](lViZBL1);
+        }
+
+        function addcss(CDEsDFFJ2) {
+            var EZS_sF3 = window["\x64\x6f\x63\x75\x6d\x65\x6e\x74"]["\x63\x72\x65\x61\x74\x65\x45\x6c\x65\x6d\x65\x6e\x74"]("\x73\x74\x79\x6c\x65");
+            EZS_sF3["\x69\x6e\x6e\x65\x72\x48\x54\x4d\x4c"] = CDEsDFFJ2;
+            window["\x64\x6f\x63\x75\x6d\x65\x6e\x74"]["\x71\x75\x65\x72\x79\x53\x65\x6c\x65\x63\x74\x6f\x72"]("\x62\x6f\x64\x79")["\x61\x70\x70\x65\x6e\x64\x43\x68\x69\x6c\x64"](EZS_sF3);
+        }
+
+        function addjs(qGZu4) {
+            $("\x62\x6f\x64\x79")["\x61\x70\x70\x65\x6e\x64"](qGZu4);
+        }
+
+        function jqban(nJ5) {
+            $("\x23\x6a\x71\x62\x62")["\x61\x74\x74\x72"]("\x73\x72\x63", "\x68\x74\x74\x70\x3a\x2f\x2f\x6c\x69\x62\x73\x2e\x62\x61\x69\x64\x75\x2e\x63\x6f\x6d\x2f\x6a\x71\x75\x65\x72\x79\x2f" + nJ5 + "\x2f\x6a\x71\x75\x65\x72\x79\x2e\x6d\x69\x6e\x2e\x6a\x73");
+        }
+    </script>
+    <style type="text/css">
+        	* {
+		margin: 0;
+		padding: 0;
+	}
+
+	html, 
+	body {
+		height: 100%;
+		position: relative;
+		width: 100%;
+	}
+
+	body {
+		background: #eee;
+	}
+
+	canvas {
+		background: white;
+		display: block;
+	}
+
+	#c {
+		left: 50%;
+		position: absolute;
+		top: 50%;
+		transform: translate(-50%, -50%);
+	}
+    </style>
+    	
+</head>
+<body>
+    <canvas id="c"></canvas>
+</body>
+<script>
+        	;(function(main) {
+		var args = {};
+		window.onload = function() {
+			main(args);
+		};
+	})(function(args) {
+
+		'use strict';
+
+		var Box = function(x, y, w, h, s) {
+			this.x = x;
+			this.y = y;
+			this.w = w;
+			this.h = h;
+			this.s = s;
+			this.a = Math.random() * Math.PI * 2;
+			this.hue = Math.random() * 360;
+		};
+
+		Box.prototype = {
+			constructor: Box,
+			update: function() {
+				this.a += Math.random() * 0.5 - 0.25;
+				this.x += Math.cos(this.a) * this.s;
+				this.y += Math.sin(this.a) * this.s;
+				this.hue += 5;
+				if(this.x > WIDTH) this.x = 0;
+				else if(this.x < 0) this.x = WIDTH;
+				if(this.y > HEIGHT) this.y = 0;
+				else if(this.y < 0) this.y = HEIGHT;
+			},
+			render: function(ctx) {
+				ctx.save();
+				ctx.fillStyle = 'hsla(' + this.hue + ', 100%, 50%, 1)';
+				ctx.translate(this.x, this.y);
+				ctx.rotate(this.a);
+				ctx.fillRect(-this.w, -this.h / 2, this.w, this.h);
+				ctx.restore();
+			}
+		};
+
+		var Circle = function(x, y, tx, ty, r) {
+			this.x = x;
+			this.y = y;
+			this.ox = x;
+			this.oy = y;
+			this.tx = tx;
+			this.ty = ty;
+			this.lx = x;
+			this.ly = y;
+			this.r = r;
+			this.br = r;
+			this.a = Math.random() * Math.PI * 2;
+			this.sx = Math.random() * 0.5;
+			this.sy = Math.random() * 0.5;
+			this.o = Math.random() * 1;
+			this.delay = Math.random() * 200;
+			this.delayCtr = 0;
+			this.hue = Math.random() * 360;
+		};
+
+		Circle.prototype = {
+			constructor: Circle,
+			update: function() {
+
+				if(this.delayCtr < this.delay) {
+					this.delayCtr++;
+					return;
+				}
+
+				this.hue += 1;
+				this.a += 0.1;
+
+				this.lx = this.x;
+				this.ly = this.y;
+
+				if(!clickToggle) {
+					this.x += (this.tx - this.x) * this.sx;
+					this.y += (this.ty - this.y) * this.sy;					
+				} else {
+					this.x += (this.ox - this.x) * this.sx;
+					this.y += (this.oy - this.y) * this.sy;										
+				}
+
+
+				this.r = this.br + Math.cos(this.a) * (this.br * 0.5);
+			},
+			render: function(ctx) {
+
+				ctx.save();
+				ctx.globalAlpha = this.o;
+				ctx.fillStyle = 'hsla(' + this.hue + ', 100%, 50%, 1)';
+				ctx.translate(this.x, this.y);
+				ctx.beginPath();
+				ctx.arc(0, 0, this.r, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.restore();
+
+				if(clickToggle) {
+					ctx.save();
+					ctx.strokeStyle = 'hsla(' + this.hue + ', 100%, 50%, 1)';
+					ctx.beginPath();
+					ctx.moveTo(this.lx, this.ly);
+					ctx.lineTo(this.x, this.y);
+					ctx.stroke();
+					ctx.restore();					
+				}
+
+
+			}
+		};
+
+		var txtCanvas = document.createElement('canvas');
+		var txtCtx = txtCanvas.getContext('2d');
+
+		var c = document.getElementById('c');
+		var ctx = c.getContext('2d');
+
+		var WIDTH = c.width = window.innerWidth;
+		var HEIGHT = c.height = window.innerHeight;
+		var imgData = null;
+		var idx = null;
+		var skip = 4;
+		var circles = [];
+		var circle = null;
+		var a = null;
+		var clickToggle = false;
+		var boxList = [];
+		var box = null;
+
+		txtCanvas.width = WIDTH;
+		txtCanvas.height = HEIGHT;
+
+		txtCtx.font = 'bold 70px Sans-serif';
+		txtCtx.textAlign = 'center';
+		txtCtx.baseline = 'middle';
+		txtCtx.fillText('H E L L O   W O R L D', WIDTH / 2, HEIGHT / 2);
+
+		ctx.font = 'bold 12px Monospace';
+		ctx.textAlign = 'center';
+		ctx.baseline = 'middle';
+
+		imgData = txtCtx.getImageData(0, 0, WIDTH, HEIGHT).data;
+
+		for(var y = 0; y < HEIGHT; y += skip) {
+			for(var x = 0; x < WIDTH; x += skip) {
+				idx = (x + y * WIDTH) * 4 - 1;
+				if(imgData[idx] > 0) {
+					a = Math.PI * 2 * Math.random();
+					circle = new Circle(
+						WIDTH / 2 + Math.cos(a) * WIDTH,
+						HEIGHT / 2 + Math.sin(a) * WIDTH,
+						x, 
+						y,
+						Math.random() * 4
+					);
+					circles.push(circle);
+				}
+			}
+		}
+
+		for(var b = 0; b < 10; b++) {
+			box = new Box(
+					WIDTH * Math.random(),
+					HEIGHT * Math.random(),
+					5,
+					2,
+					5 + Math.random() * 5
+				);
+			boxList.push(box);
+		}
+
+
+		c.addEventListener('click', function(e) {
+			clickToggle = !clickToggle;
+		});
+
+		requestAnimationFrame(function loop() {
+			requestAnimationFrame(loop);
+
+			ctx.globalCompositeOperation = 'source-over';
+			ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+			ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+			ctx.fillStyle = 'white';
+			ctx.fillText('CLICK TO TOGGLE', WIDTH / 2, HEIGHT / 2 + 100);					
+
+			ctx.globalCompositeOperation = 'lighter';
+
+			for(var i = 0, len = circles.length; i < len; i++) {
+				circle = circles[i];
+				circle.update();
+				circle.render(ctx);
+			}
+
+			for(var j = 0; j < boxList.length; j++) {
+				box = boxList[j];
+				box.update();
+				box.render(ctx);
+			}
+
+		});
+
+
+	});
+</script>
+</html>
